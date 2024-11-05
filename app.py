@@ -3,10 +3,12 @@ from forms import NameForm
 import psycopg2
 from psycopg2 import sql
 from config import Config
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
 app = Flask(__name__)
 app.config.from_object(Config)
-app.secret_key = 'your_secret_key'  # Замените на ваш секретный ключ
+app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')  # default_secret_key — резервное значение
 
 # Соединение с базой данных
 def get_db_connection():
@@ -54,4 +56,5 @@ def index():
     return render_template('index.html', form=form)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
+

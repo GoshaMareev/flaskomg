@@ -1,24 +1,20 @@
-FROM ubuntu:latest
-LABEL authors="maree"
-# Используем официальный образ Python
-FROM python:3.10-slim
+FROM python:3.9-slim
 
-# Устанавливаем рабочую директорию
-WORKDIR /app
+# Установите зависимости для psycopg2
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Копируем файлы зависимостей
-COPY requirements.txt .
-
-# Устанавливаем зависимости
+# Установите зависимости Python
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем весь код приложения
+# Копируем проект
 COPY . .
 
-# Открываем порт
-EXPOSE 5000
+# Копируем файл .env
+COPY .env ./
 
-# Команда для запуска приложения
+# Указываем команду для запуска приложения
 CMD ["python", "app.py"]
-
-ENTRYPOINT ["top", "-b"]
