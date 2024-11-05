@@ -1,0 +1,38 @@
+# Виртуальное окружение
+.venv/
+venv/
+env/
+env.bak/
+
+# Пакеты и файлы, создаваемые IDE
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Папка с данными
+instance/
+
+# Файлы конфигурации IDE
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Файлы временного хранения
+*.log
+*.tmp
+
+# Docker
+*.dockerignore
+
+# Среда разработки Jupyter
+.ipynb_checkpoints/
+
+# Среда разработки PyCharm
+*.iml
+.idea/
+
+# Система Windows
+Thumbs.db
+.DS_Store

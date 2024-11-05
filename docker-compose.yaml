@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: your_postgres_container
+    environment:
+      POSTGRES_USER: flasktest
+      POSTGRES_PASSWORD: Password1!
+      POSTGRES_DB: fl_test
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - flask_network
+
+  app:
+    build: .
+    container_name: flask_app
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgres://flasktest:Password1!@db:5432/fl_test
+    networks:
+      - flask_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  db_data:
+
+networks:
+  flask_network:
