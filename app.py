@@ -10,8 +10,13 @@ app.secret_key = 'your_secret_key'  # Замените на ваш секрет�
 
 # Соединение с базой данных
 def get_db_connection():
-    conn = psycopg2.connect(app.config['SQLALCHEMY_DATABASE_URI'])
-    return conn
+    try:
+        conn = psycopg2.connect(app.config['SQLALCHEMY_DATABASE_URI'])
+        print("Успешное подключение к базе данных")  # Отладочный вывод
+        return conn
+    except psycopg2.Error as e:
+        print(f"Ошибка подключения к базе данных: {e}")  # Вывод сообщения об ошибке
+        return None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -22,9 +27,22 @@ def index():
         if conn is not None:
             try:
                 cur = conn.cursor()
-                cur.execute(sql.SQL("INSERT INTO public.users (name) VALUES (%s)"), [name])
-                conn.commit()
-                flash('Имя успешно добавлено!')
+
+                # Проверка существования таблицы
+                print("Проверка существования таблицы...")
+                cur.execute("SELECT to_regclass('public.users');")
+                table_exists = cur.fetchone()[0]
+                print(f"Таблица существует: {table_exists}")
+
+                if table_exists is None:
+                    flash('Ошибка: Таблица "users" не существует.')
+                else:
+                    print("Вставка имени в таблицу...")
+                    cur.execute(sql.SQL("INSERT INTO public.users (name) VALUES (%s)"), [name])
+                    conn.commit()
+                    flash('Имя успешно добавлено!')
+                    print("Имя успешно добавлено!")
+
             except Exception as e:
                 flash(f'Ошибка добавления имени: {e}')
             finally:
@@ -34,7 +52,6 @@ def index():
             flash('Не удалось подключиться к базе данных.')
         return redirect(url_for('index'))
     return render_template('index.html', form=form)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
