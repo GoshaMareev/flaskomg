@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма ввода имени</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Введите ваше имя</h1>
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.name.label(class='form-label') }}
+                {{ form.name(class='form-control', placeholder='Ваше имя') }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class='btn btn-primary') }}
+            </div>
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="alert-messages">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <div class="image-gallery">
+            <h2>Галерея котиков</h2>
+            <img src="{{ url_for('static', filename='images/cat1.jpg') }}" alt="Котик 1" class="cat-image">
+            <img src="{{ url_for('static', filename='images/cat2.jpg') }}" alt="Котик 2" class="cat-image">
+        </div>
+    </div>
+</body>
+</html>
