@@ -8,16 +8,16 @@ import os
 load_dotenv()
 app = Flask(__name__)
 app.config.from_object(Config)
-app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')  # default_secret_key — резервное значение
+app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')  # default_secret_key
 
 # Соединение с базой данных
 def get_db_connection():
     try:
         conn = psycopg2.connect(app.config['SQLALCHEMY_DATABASE_URI'])
-        print("Успешное подключение к базе данных")  # Отладочный вывод
+        print("Успешное подключение к базе данных")
         return conn
     except psycopg2.Error as e:
-        print(f"Ошибка подключения к базе данных: {e}")  # Вывод сообщения об ошибке
+        print(f"Ошибка подключения к базе данных: {e}")
         return None
 
 @app.route('/', methods=['GET', 'POST'])
@@ -29,8 +29,6 @@ def index():
         if conn is not None:
             try:
                 cur = conn.cursor()
-
-                # Проверка существования таблицы
                 print("Проверка существования таблицы...")
                 cur.execute("SELECT to_regclass('public.users');")
                 table_exists = cur.fetchone()[0]

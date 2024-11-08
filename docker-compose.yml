@@ -1,11 +1,11 @@
 services:
   db:
-    image: postgres:latest
+    image: postgres:13
     container_name: your_postgres_container
     environment:
-      POSTGRES_USER: flasktest
-      POSTGRES_PASSWORD: Password1!
-      POSTGRES_DB: fl_test
+      POSTGRES_USER: ${POSTGRES_USER:}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -19,7 +19,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      DATABASE_URL: postgres://flasktest:Password1!@db:5432/fl_test
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     networks:
       - flask_network
     healthcheck:
