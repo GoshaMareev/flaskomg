@@ -2,7 +2,7 @@ import os
 import psycopg2
 from psycopg2 import sql
 
-# Получение параметров подключения из переменных окружения
+
 DB_URL = os.getenv('DATABASE_URL', 'postgresql://flasktest:Password1!@localhost:5432/fl_test')
 
 

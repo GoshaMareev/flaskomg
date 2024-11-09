@@ -1,22 +1,22 @@
 FROM python:3.9-slim
 
-# Установка зависимостей для psycopg2 и psql (PostgreSQL client)
+# Установка зависимостей
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Установка зависимостей Python
+# Установка зависимостей
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-# Копирование всего проекта в контейнер
+р
 COPY . .
 
-# Копирование файла .env
+# Копирование .env файла
 COPY .env ./
 
-# Указываем команду для запуска приложения
+# Запуск приложения
 CMD ["python", "app.py"]
 

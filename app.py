@@ -12,13 +12,13 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)
-app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')  # Установите секретный ключ
+app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')
 
 # URL-кодирование пароля для корректного подключения
 password = quote_plus(os.getenv('DB_PASSWORD', 'Password1!'))
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.getenv('DB_USER', 'flasktest')}:{password}@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '5432')}/{os.getenv('DB_NAME', 'fl_test')}"
 
-# Функция подключения к базе данных
+# подключение к базе данных
 def get_db_connection():
     try:
         conn = psycopg2.connect(app.config['SQLALCHEMY_DATABASE_URI'])
@@ -56,7 +56,7 @@ def index():
                 if table_exists is None:
                     flash('Ошибка: Таблица "users" не существует.')
                 else:
-                    # Вставка данных
+                    # Добавление имени в таблицу
                     cur.execute(sql.SQL("INSERT INTO public.users (name) VALUES (%s)"), [name])
                     conn.commit()
                     flash('Имя успешно добавлено!')
