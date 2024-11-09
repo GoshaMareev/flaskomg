@@ -25,9 +25,7 @@ instance/
 
 # Docker
 *.dockerignore
-
-# Среда разработки Jupyter
-.ipynb_checkpoints/
+docker-compose.override.yml
 
 # Среда разработки PyCharm
 *.iml
@@ -36,3 +34,10 @@ instance/
 # Система Windows
 Thumbs.db
 .DS_Store
+
+# Конфиденциальные файлы
+.env
+
+# Файлы для тестирования
+.coverage
+.hypothesis/

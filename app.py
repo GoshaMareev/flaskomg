@@ -5,20 +5,39 @@ from psycopg2 import sql
 from config import Config
 from dotenv import load_dotenv
 import os
+from urllib.parse import quote_plus
+
+# Загрузка переменных окружения
 load_dotenv()
+
 app = Flask(__name__)
 app.config.from_object(Config)
-app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')  # default_secret_key
+app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')  # Установите секретный ключ
 
-# Соединение с базой данных
+# URL-кодирование пароля для корректного подключения
+password = quote_plus(os.getenv('DB_PASSWORD', 'Password1!'))
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.getenv('DB_USER', 'flasktest')}:{password}@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '5432')}/{os.getenv('DB_NAME', 'fl_test')}"
+
+# Функция подключения к базе данных
 def get_db_connection():
     try:
         conn = psycopg2.connect(app.config['SQLALCHEMY_DATABASE_URI'])
         print("Успешное подключение к базе данных")
+        cur = conn.cursor()
+        # Создание таблицы, если она не существует
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.users (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL
+            );
+        """)
+        conn.commit()
+        cur.close()
         return conn
     except psycopg2.Error as e:
-        print(f"Ошибка подключения к базе данных: {e}")
+        print(f"Ошибка подключения к базе данных: {e.pgcode}, {e.pgerror}")
         return None
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -29,7 +48,7 @@ def index():
         if conn is not None:
             try:
                 cur = conn.cursor()
-                print("Проверка существования таблицы...")
+                # Проверка существования таблицы
                 cur.execute("SELECT to_regclass('public.users');")
                 table_exists = cur.fetchone()[0]
                 print(f"Таблица существует: {table_exists}")
@@ -37,7 +56,7 @@ def index():
                 if table_exists is None:
                     flash('Ошибка: Таблица "users" не существует.')
                 else:
-                    print("Вставка имени в таблицу...")
+                    # Вставка данных
                     cur.execute(sql.SQL("INSERT INTO public.users (name) VALUES (%s)"), [name])
                     conn.commit()
                     flash('Имя успешно добавлено!')
@@ -55,4 +74,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
-
